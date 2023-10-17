@@ -35,6 +35,19 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
             -d '{"body": "'"$GITHUB_OUTPUT"'"}'
 
+      - name: Add comment to PR
+        if: failure() && steps.phpcs.outcome != 'success'
+        env:
+          URL: ${{ github.event.issue.comments_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl \
+            -X POST \
+            $URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "PHPCS is not valid" }'
+
       - name: Close PR if PHPCS Errors
         if: failure() && steps.phpcs.outcome != 'success'
         run: |
