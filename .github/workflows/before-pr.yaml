@@ -22,11 +22,12 @@ jobs:
         run: composer install
 
       - name: Run PHPCS
-        run: vendor/bin/php-cs-fixer fix . --diff --dry-run || true
+        run: vendor/bin/php-cs-fixer fix . --diff --dry-run
 
       - name: Check PHPCS Output
+        if: always()
         id: phpcs_output
-        run: echo "::set-output name=phpcs_errors::$(php vendor/bin/php-cs-fixer fix . --diff --dry-run || true --report=checkstyle)"
+        run: echo "::set-output name=phpcs_errors::$(php vendor/bin/php-cs-fixer fix . --diff --dry-run --report=checkstyle)"
 
       - name: Comment on PR if PHPCS Errors
         if: steps.phpcs_output.outputs.phpcs_errors != ''
