@@ -22,7 +22,7 @@ jobs:
         run: composer install
 
       - name: Run PHPCS
-        run: vendor/bin/php-cs-fixer fix . --diff --dry-run
+        run: vendor/bin/php-cs-fixer fix . --diff --dry-run || true
 
       - name: Check PHPCS Output
         id: phpcs_output
