@@ -27,16 +27,6 @@ jobs:
 
       - name: Comment on PR if PHPCS Errors
         if: failure() && steps.phpcs.outcome != 'success'
-        run: |
-          echo "MESSAGE=PHPCS is not valid" >> $GITHUB_OUTPUT
-          echo "Commenting on PR"
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d '{"body": "'"$GITHUB_OUTPUT"'"}'
-
-      - name: Add comment to PR
-        if: failure() && steps.phpcs.outcome != 'success'
         uses: actions/github-script@v2
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
