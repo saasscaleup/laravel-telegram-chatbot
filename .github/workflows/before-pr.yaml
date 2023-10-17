@@ -22,15 +22,11 @@ jobs:
         run: composer install
 
       - name: Run PHPCS
+        id: phpcs
         run: vendor/bin/php-cs-fixer fix . --diff --dry-run
 
-      - name: Check PHPCS Output
-        if: always()
-        id: phpcs_output
-        run: echo "::set-output name=phpcs_errors::$(php vendor/bin/php-cs-fixer fix . --diff --dry-run --report=checkstyle)"
-
       - name: Comment on PR if PHPCS Errors
-        if: steps.phpcs_output.outputs.phpcs_errors != ''
+        if: failure() && steps.phpcs.outcome != 'success'
         run: |
           echo "::set-output name=comment_body::$(echo 'PHPCS is not valid. Please fix the code style.')"
           echo "Commenting on PR"
@@ -40,7 +36,7 @@ jobs:
             -d '{"body": "'"$COMMENT_BODY"'"}'
 
       - name: Close PR if PHPCS Errors
-        if: steps.phpcs_output.outputs.phpcs_errors != ''
+        if: failure() && steps.phpcs.outcome != 'success'
         run: |
           echo "Closing PR"
           curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
