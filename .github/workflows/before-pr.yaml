@@ -28,12 +28,12 @@ jobs:
       - name: Comment on PR if PHPCS Errors
         if: failure() && steps.phpcs.outcome != 'success'
         run: |
-          echo "::set-output name=comment_body::$(echo 'PHPCS is not valid. Please fix the code style.')"
+          echo "PHPCS is not valid" >> $GITHUB_OUTPUT
           echo "Commenting on PR"
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d '{"body": "'"$COMMENT_BODY"'"}'
+            -d '{"body": "'"$GITHUB_OUTPUT"'"}'
 
       - name: Close PR if PHPCS Errors
         if: failure() && steps.phpcs.outcome != 'success'
